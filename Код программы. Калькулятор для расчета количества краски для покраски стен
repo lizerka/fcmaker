@@ -1,0 +1,200 @@
+#include <stdio.h>
+# include <locale.h>
+#define _CRT_SECURE_NO_DEPRECATE
+// Структура для хранения размеров комнаты и проемов
+struct Room 
+{
+    float length;
+    float height;
+    float width;
+};
+struct Opening 
+{
+    float length;
+    float width;
+};
+
+// Функция для ввода размеров комнаты
+void enterRoomSize(struct Room *room) 
+{
+    printf("Введите размеры комнаты:\n");
+    printf("Длина: ");
+    scanf("%f", &(room->length));
+    printf("Высота: ");
+    scanf("%f", &(room->height));
+    printf("Ширина: ");
+    scanf("%f", &(room->width));
+}
+
+// Функция для ввода количества проемов
+int enterNumberOfOpenings() 
+{
+    int num;
+    printf("Введите количество проемов: ");
+    scanf("%d", &num);
+    return num;
+}
+
+// Функция для ввода размеров проема
+void enterOpeningSize(struct Opening *opening) 
+{
+    printf("Введите размеры проема:\n");
+    printf("Длина: ");
+    scanf("%f", &(opening->length));
+    printf("Ширина: ");
+    scanf("%f", &(opening->width));
+}
+
+// Функция для выбора типа краски
+float selectPaintType() 
+{
+    char choice;
+    printf("Выберите тип краски:\n");
+    printf("1 - акриловая\n");
+    printf("2 - латексная\n");
+    printf("3 - силиконовая\n");
+    printf("Тип краски: ");
+    scanf(" %c", &choice);
+
+    switch (choice) {
+        case '1':
+            return 0.25;
+        case '2':
+            return 0.6;
+        case '3':
+            return 0.3;
+        default:
+            return 0;
+    }
+}
+
+// Функция для расчета количества краски
+float calculatePaint(struct Room room, struct Opening *openings, int numOpenings, float paintType) 
+{
+    float totalArea = 2 * (room.length * room.height + room.width * room.height) + room.length * room.width;
+
+    // Вычитаем площадь проемов
+    for (int i = 0; i < numOpenings; i++) {
+        float openingArea = openings[i].length * openings[i].width;
+        totalArea -= openingArea;
+    }
+
+    return totalArea * paintType;
+}
+
+int main() {
+  setlocale(LC_ALL, "RUS");   
+struct Room room;
+    struct Opening openings[10]; // Массив проемов (предполагаем максимум 10 проемов)
+    int numOpenings = 0;
+    float paintType = 0;
+
+    do 
+{
+        printf("\nМеню действий:\n");
+        printf("1. Ввести размер комнаты\n");
+        printf("2. Изменить размер комнаты\n");
+        printf("3. Ввести количество проемов\n");
+        printf("4. Ввести размер проема\n");
+        printf("5. Изменить размер проема\n");
+        printf("6. Выбрать тип краски\n");
+        printf("7. Создать отчет\n");
+        printf("8. Выйти из программы\n");
+
+        int choice;
+        printf("Выберите действие: ");
+        scanf("%d", &choice);
+
+        switch (choice) 
+{
+            case 1:
+                enterRoomSize(&room);
+                break;
+            case 2:
+                if (room.length == 0 && room.height == 0 && room.width == 0)
+ {
+                    printf("Сначала введите размер комнаты.\n");
+                } 
+else 
+{
+                    enterRoomSize(&room);
+                }
+                break;
+            case 3:
+                numOpenings = enterNumberOfOpenings();
+                break;
+            case 4:
+                if (numOpenings == 0) 
+{
+                    printf("Сначала введите количество проемов.\n");
+                } 
+else 
+{
+                    enterOpeningSize(&openings[numOpenings - 1]);
+                }
+                break;
+            case 5:
+                if (numOpenings == 0) 
+{
+                    printf("Сначала введите количество проемов.\n");
+                } 
+else 
+{
+                    int openingIndex;
+                    printf("Введите номер проема для изменения размера: ");
+                    scanf("%d", &openingIndex);
+                    if (openingIndex >= 1 && openingIndex <= numOpenings) 
+{
+                        enterOpeningSize(&openings[openingIndex - 1]);
+                    } 
+else 
+{
+                        printf("Некорректный номер проема.\n");
+                    }
+                }
+                break;
+            case 6:
+                paintType = selectPaintType();
+                if (paintType == 0) 
+{
+                    printf("Некорректный выбор типа краски.\n");
+                }
+                break;
+            case 7:
+                if (room.length == 0 && room.height == 0 && room.width == 0) 
+{
+                    printf("Сначала введите размер комнаты.\n");
+                } 
+else if (numOpenings == 0) 
+{
+                    printf("Сначала введите количество проемов.\n");
+                } else if (paintType == 0) 
+{
+                    printf("Сначала выберите тип краски.\n");
+                } 
+else 
+{
+                    float paintAmount = calculatePaint(room, openings, numOpenings, paintType);
+                    printf("Общая площадь комнаты: %.2f м²\n", 2 * (room.length * room.height + room.width * room.height) + room.length * room.width);
+                    printf("Площадь проемов: %.2f м²\n", openings[0].length * openings[0].width);
+                    printf("Необходимое количество краски: %.2f л\n", paintAmount);
+                }
+                break;
+            case 8:
+                return 0;
+            default:
+                printf("Некорректный выбор. Пожалуйста, выберите действие из меню.\n");
+        }
+
+        char answer;
+        printf("Продолжить? (d): ");
+        scanf(" %c", &answer);
+        if (answer != 'd') 
+{
+            break;
+        }
+
+    } while (1);
+
+    return 0;
+}
